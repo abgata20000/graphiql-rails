@@ -6,8 +6,9 @@ module Resolvers
     argument :page, Integer, required: false
     argument :limit, Integer, required: false
 
-    def resolve(query: nil, page: 1, limit: 100)
-      search_params = query.present? ? form_ransack_params(query) : {}
+    # rubocop:disable Naming/MethodParameterName
+    def resolve(q: nil, page: 1, limit: 100)
+      search_params = q.present? ? form_ransack_params(q) : {}
       @q = Book.joins(:tags, :authors).ransack(search_params)
       @q.sorts = "id asc" if @q.sorts.blank?
       books = @q.result(distinct: true).page(page).per(limit)
@@ -16,5 +17,6 @@ module Resolvers
         pagination: pagination(books)
       }
     end
+    # rubocop:enable Naming/MethodParameterName
   end
 end
